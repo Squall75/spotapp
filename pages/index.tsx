@@ -3,6 +3,8 @@ import { Button } from '@chakra-ui/react'
 import SpotifyWebApi from '../lib/SpotifyApi';
 import OAuthManager from '../lib/oauthManager';
 import { useRef, useState } from 'react';
+import SpotifyAuthForm from '../components/SpotifyAuthForm';
+import SpotifyLibrary from '../components/spotifyLibrary';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,6 +26,7 @@ const Home = () => {
         'playlist-modify-private',
         'user-library-read',
         'user-library-modify',
+        'streaming',
       ],
     }).catch(function (error) {
       console.error('There was an error obtaining the token', error);
@@ -39,18 +42,23 @@ const Home = () => {
 
     console.log("Access Token " + accessToken)
 
-    const signedInUser = await spotifyApi.getMe();
-    console.log(signedInUser.body);
-    setUser(signedInUser);
-
-    setIsLoggedIn(true);
+    try {
+      const signedInUser = await spotifyApi.getMe();
+      console.log(JSON.stringify(signedInUser));
+      setUser(signedInUser);
+      setIsLoggedIn(true);
+    } catch(e) {
+      console.error(e);
+    }
   };
 
   return (
     <Box>
-      <Text>Authenticate with Spotify </Text>
-      <Button colorScheme='whatsapp' size='lg' onClick={handleLoginClick}>Spotify Auth</Button>
-  </Box>
+      {isLoggedIn 
+      ? <SpotifyLibrary user={user} api={api} />
+      : <SpotifyAuthForm handleLoginClick={handleLoginClick}/>
+      }
+    </Box>
   )
 }
 

@@ -107,8 +107,40 @@ export default class SpotifyWebApi {
     this.token = token;
   }
 
+  getAccessToken() {
+    return this.token;
+  }
+
   async getMe() {
     return await this.getGeneric(`${apiPrefix}/me`);
+  }
+
+  async getMeFollowedArtists() { 
+    return await this.getGeneric(`${apiPrefix}/me/following?type=artist`)
+  }
+
+  async getArtistAlbum(artistId: string) { 
+    return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums`)
+  }
+
+  async postPlayerPlayBack(device_id: string, context_uri: string) {
+      const dataToBeSent = {
+        context_uri,
+        offset: {position:5},
+        position_ms: 0
+      };
+  
+      const res = await fetch(
+        `${apiPrefix}/me/player/play/?device_id=${device_id}`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+          body: JSON.stringify(dataToBeSent),
+        }
+      );
+      return parseAPIResponse(res);
   }
 
   async getGeneric(url: string, options = {}) {
