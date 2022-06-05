@@ -123,6 +123,10 @@ export default class SpotifyWebApi {
     return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums`)
   }
 
+  async getAlbumInfo(albumId: string){
+    return await this.getGeneric(`${apiPrefix}/albums/${albumId}`)
+  }
+
   async postPlayerPlayBack(device_id: string, context_uri: string) {
       const dataToBeSent = {
         context_uri,

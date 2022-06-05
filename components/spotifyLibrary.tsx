@@ -34,7 +34,11 @@ const SpotifyLibrary = ({ user, api }) => {
           setSelectedArtistId={setSelectedArtistId}
         />
         :
-        <AlbumList selectedArtistId={selectedArtistId} spotifyAPI={spotifyAPI} playerDeviceId={playerDeviceId}/>
+        <AlbumList 
+          selectedArtistId={selectedArtistId} 
+          spotifyAPI={spotifyAPI} 
+          playerDeviceId={playerDeviceId}
+          setViewArtists={setViewArtists}/>
       }
     </Box>
   );
