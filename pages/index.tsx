@@ -1,18 +1,19 @@
-import { Box, Text} from '@chakra-ui/layout'
-import { Button } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/react';
 import SpotifyWebApi from '../lib/SpotifyApi';
 import OAuthManager from '../lib/oauthManager';
 import { useRef, useState } from 'react';
 import SpotifyAuthForm from '../components/SpotifyAuthForm';
 import SpotifyLibrary from '../components/spotifyLibrary';
+import CollectionLayout from '../components/CollectionLayout';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [api, setApi] = useState(null)
+  const [api, setApi] = useState(null);
 
   const handleLoginClick = async () => {
-    console.log("Logging into Spotify");
+    console.log('Logging into Spotify');
     const accessToken = await OAuthManager.obtainToken({
       scopes: [
         /*
@@ -40,26 +41,27 @@ const Home = () => {
     spotifyApi.setAccessToken(accessToken);
     setApi(spotifyApi);
 
-    console.log("Access Token " + accessToken)
+    console.log('Access Token ' + accessToken);
 
     try {
       const signedInUser = await spotifyApi.getMe();
       console.log(JSON.stringify(signedInUser));
       setUser(signedInUser);
       setIsLoggedIn(true);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   };
 
   return (
     <Box>
-      {isLoggedIn 
-      ? <SpotifyLibrary user={user} api={api} />
-      : <SpotifyAuthForm handleLoginClick={handleLoginClick}/>
-      }
+      {isLoggedIn ? (
+        <CollectionLayout api={api} />
+      ) : (
+        <SpotifyAuthForm handleLoginClick={handleLoginClick} />
+      )}
     </Box>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
