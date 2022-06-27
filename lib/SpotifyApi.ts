@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import fetch from './customFetch';
 export type SpotifyArtistType = {
   id: string;
@@ -111,26 +112,91 @@ export default class SpotifyWebApi {
     return this.token;
   }
 
+  async getAllFollowedArtists() {
+    let allFollowedArtist;
+    let currentArtistTotal = 0;
+
+    const firstRes = await this.getMeFollowedArtists();
+    currentArtistTotal = firstRes?.artists.items.length;
+    allFollowedArtist = {artists : firstRes?.artists};
+
+    console.log("followedArtsts " + JSON.stringify(allFollowedArtist));
+
+    // Max limit of return artist is 50. If more we will want to call for all
+    if (firstRes.artists.total > 50) {
+
+      let followedRes;
+      while (currentArtistTotal < firstRes.artists.total) {
+        followedRes = await this.getMeFollowedArtists(allFollowedArtist.artists.items[currentArtistTotal-1].id);
+        console.log("next followed " + JSON.stringify(followedRes));
+        currentArtistTotal += followedRes?.artists.items.length;
+        followedRes.artists.items.map(item => allFollowedArtist.artists.items.push(item));
+        console.log("total artists: " + JSON.stringify(followedRes.artists));
+        console.log("Total followed: " + allFollowedArtist.artists.items.length);
+      }
+      allFollowedArtist.artists.items.sort((itemA, itemB) => {
+        const nameA = itemA.name.toUpperCase();
+        const nameB = itemB.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        } else if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    return allFollowedArtist;
+  }
+
   async getMe() {
     return await this.getGeneric(`${apiPrefix}/me`);
   }
 
-  async getMeFollowedArtists() { 
-    return await this.getGeneric(`${apiPrefix}/me/following?type=artist`)
+  async getMeFollowedArtists(artistId?) { 
+    if (artistId) {
+      return await this.getGeneric(`${apiPrefix}/me/following?type=artist&limit=50&after=${artistId}`)
+    }
+    return await this.getGeneric(`${apiPrefix}/me/following?type=artist&limit=50`)
+  }
+
+  async getAllArtistAlbums(artistId: string) {
+    let allArtistAlbums;
+    let albumResponse;
+
+    /*
+     * First get first list of albums and then use next response url to loop 
+     * until no more pages of albums are left to pull. 
+    */
+    do {
+      if (albumResponse?.next)
+      {
+        albumResponse = await this.getGeneric(albumResponse.next);
+        allArtistAlbums.items.push(albumResponse.items);
+      }
+      else {
+        albumResponse = await this.getArtistAlbum(artistId);
+        allArtistAlbums = {items: albumResponse?.items}
+      }
+    } while (albumResponse.next);
+
+    console.log("All Albums " + JSON.stringify(allArtistAlbums));
+
+    return allArtistAlbums;
+  
   }
 
   async getArtistAlbum(artistId: string) { 
-    return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums`)
+    return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums?limit=50`)
   }
 
   async getAlbumInfo(albumId: string){
     return await this.getGeneric(`${apiPrefix}/albums/${albumId}`)
   }
 
-  async postPlayerPlayBack(device_id: string, context_uri: string) {
+  async postPlayerPlayBack(device_id: string, context_uri: string, offset_uri: string) {
       const dataToBeSent = {
         context_uri,
-        offset: {position:5},
+        offset: {uri:offset_uri},
         position_ms: 0
       };
   

@@ -1,10 +1,11 @@
-import { Box, HStack } from "@chakra-ui/layout";
+import { Box, Flex, HStack } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import MajorNavComponent from "./majorNavComponent";
 import MinorNavComponent from "./minorNavComponent";
 import MyAlbumList from "./myAlbumList";
 import MyArtistList from "./myArtistList";
 import MySongList from "./mySongList";
+import Player from "./player";
 
 const CollectionLayout = ({api}) => {
 
@@ -16,11 +17,13 @@ const CollectionLayout = ({api}) => {
   const [artistAlubms, setArtistAlbums] = useState(null);
   const [albumSongs, setAlbumSongs] = useState(null);
 
+  const [playerDeviceId, setPlayerDeviceId] = useState(null);
+
   useEffect(() => {
     const getArtists = async () => {
       console.log('Use Effect Library');
       console.log("Spotify API Token " + spotifyAPI.getAccessToken())
-      const artists = await spotifyAPI.getMeFollowedArtists();
+      const artists = await spotifyAPI.getAllFollowedArtists();
       console.log(JSON.stringify(artists));
       setFollowedArtists(artists);
 
@@ -32,7 +35,7 @@ const CollectionLayout = ({api}) => {
 
   useEffect(() => {
     const getSelectedArtistAlbums = async () => {
-      const currentAlbums = await spotifyAPI.getArtistAlbum(selectedArtists.id);
+      const currentAlbums = await spotifyAPI.getAllArtistAlbums(selectedArtists.id);
       console.log("Current Albums " + JSON.stringify(currentAlbums))
       setArtistAlbums(currentAlbums);
 
@@ -69,17 +72,31 @@ const CollectionLayout = ({api}) => {
           <MinorNavComponent />
         </Box>
       </Box>
-      <HStack position="absolute" top="100px" alignItems="start">
-        <Box width="250px" left="0">
-          <MyArtistList followedArtists={followedArtists}/>
+      <HStack
+        position="absolute"
+        top="100px"
+        alignItems="start"
+        height="calc(100vh - 200px)"
+        marginBottom="100px"
+        bg="gray.400"
+      >
+        <Box width="calc(100vw/4)" left="0" height="calc(100vh - 200px)" overflowY="scroll">
+          <MyArtistList followedArtists={followedArtists} setSelectedArtists={setSelectedArtists}/>
         </Box>
-        <Box marginLeft="250px">
+        <Box marginLeft="250px" bg="gray.100" height="calc(100vh - 200px)" width="calc(100vw/2)" overflowY="scroll">
           <MyAlbumList albums={artistAlubms} selectedAlbum={selectedAlbum} setSelectedAlbum={setSelectedAlbum}/>
         </Box>
-        <Box marginLeft="100px">
-          <MySongList songs={albumSongs} selectedSong={selectedSong}/>
+        <Box marginLeft="100px" height="calc(100vh - 200px)" width="calc(100vw/4)" overflowY="scroll">
+          <MySongList songs={albumSongs} selectedSong={selectedSong} playerDeviceId={playerDeviceId} spotifyAPI={spotifyAPI}/>
         </Box>
       </HStack>
+      <Box position="absolute" left="0" bottom="0">
+        <Flex align="center">
+          <Box height="100px" width="100vw" padding="10px">
+            <Player token={spotifyAPI.getAccessToken()} setPlayerDeviceId={setPlayerDeviceId} setSelectedSong={setSelectedSong}/>
+          </Box>
+        </Flex>
+      </Box>
     </Box>
   );
 };
