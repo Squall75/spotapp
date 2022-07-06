@@ -5,7 +5,7 @@ const majorNavComponent = () => {
     <Box
       width="100%"
       height="100%"
-      paddingX="5px"
+      paddingX="20px"
       >
         <HStack spacing="24px">
           <Button variant="unstyled">quickplay</Button>

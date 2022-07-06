@@ -3,8 +3,6 @@ import { Box, Button, Text, VStack } from '@chakra-ui/react';
 const mySongList = ({ songs, selectedSong, playerDeviceId, spotifyAPI }) => {
 
   const playSong = (song) => {
-    console.log('Play for song ' + song.uri + ' song track ' + song.track_number);
-    console.log('using playerdevice id' + playerDeviceId);
     spotifyAPI.postPlayerPlayBack(playerDeviceId, songs.uri, song.uri);
   };
 

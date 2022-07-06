@@ -28,6 +28,7 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
                 w="128px"
                 h="128px"
                 onClick={() => setSelectedAlbum(albumDetails)}
+                key={albumDetails.id}
               >
                 <Image src={imageUrl} width="64px" height="64px" />
                 <Link

@@ -6,11 +6,13 @@ import MyAlbumList from "./myAlbumList";
 import MyArtistList from "./myArtistList";
 import MySongList from "./mySongList";
 import Player from "./player";
+import UserLibrarySearch from "./userLibrarySearch";
 
 const CollectionLayout = ({api}) => {
 
   const [spotifyAPI, setSpotifyAPI] = useState(api);
   const [followedArtists, setFollowedArtists] = useState(null);
+  const [unfilteredArtists, setUnfilteredArtists] = useState(null);
   const [selectedArtists, setSelectedArtists] = useState(null);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
@@ -26,6 +28,7 @@ const CollectionLayout = ({api}) => {
       const artists = await spotifyAPI.getAllFollowedArtists();
       console.log(JSON.stringify(artists));
       setFollowedArtists(artists);
+      setUnfilteredArtists(artists);
 
       // Set current Selected Artist as first from the list of artist
       setSelectedArtists(artists?.artists.items[0]);
@@ -35,7 +38,7 @@ const CollectionLayout = ({api}) => {
 
   useEffect(() => {
     const getSelectedArtistAlbums = async () => {
-      const currentAlbums = await spotifyAPI.getAllArtistAlbums(selectedArtists.id);
+      const currentAlbums = await spotifyAPI.getAllArtistAlbums(selectedArtists?.id);
       console.log("Current Albums " + JSON.stringify(currentAlbums))
       setArtistAlbums(currentAlbums);
 
@@ -65,11 +68,14 @@ const CollectionLayout = ({api}) => {
         left="0px"
         right="0px"
       >
-        <Box position="absolute" width="100%">
+        <Box position="absolute" width="70%">
           <MajorNavComponent />
         </Box>
-        <Box position="absolute" top="20px" width="100%" left="0">
+        <Box position="absolute" top="20px" width="70%" left="0">
           <MinorNavComponent />
+        </Box>
+        <Box position="absolute" right="0" top="10px" width="30%">
+          <UserLibrarySearch followedArtists={followedArtists} setFollowedArtists={setFollowedArtists} unfilteredArtists={unfilteredArtists}/>
         </Box>
       </Box>
       <HStack
@@ -80,7 +86,7 @@ const CollectionLayout = ({api}) => {
         marginBottom="100px"
         bg="gray.400"
       >
-        <Box width="calc(100vw/4)" left="0" height="calc(100vh - 200px)" overflowY="scroll">
+        <Box width="calc(100vw/4)" left="0" height="calc(100vh - 200px)">
           <MyArtistList followedArtists={followedArtists} setSelectedArtists={setSelectedArtists}/>
         </Box>
         <Box marginLeft="250px" bg="gray.100" height="calc(100vh - 200px)" width="calc(100vw/2)" overflowY="scroll">
