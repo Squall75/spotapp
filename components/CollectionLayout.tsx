@@ -87,7 +87,7 @@ const CollectionLayout = ({api}) => {
         bg="gray.400"
       >
         <Box width="calc(100vw/4)" left="0" height="calc(100vh - 200px)">
-          <MyArtistList followedArtists={followedArtists} setSelectedArtists={setSelectedArtists}/>
+          <MyArtistList followedArtists={followedArtists} selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}/>
         </Box>
         <Box marginLeft="250px" bg="gray.100" height="calc(100vh - 200px)" width="calc(100vw/2)" overflowY="scroll">
           <MyAlbumList albums={artistAlubms} selectedAlbum={selectedAlbum} setSelectedAlbum={setSelectedAlbum}/>

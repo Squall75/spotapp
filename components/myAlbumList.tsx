@@ -1,17 +1,8 @@
-import { Box, Button, HStack, Link, Text, VStack } from '@chakra-ui/react';
+import { Box, HStack, Link, Text, VStack } from '@chakra-ui/react';
 import Image from 'next/image';
+import { getUrlImageOfSize } from '../lib/helperFunctions';
 
 const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
-  const getUrlImageOfSize = (images, imageSize: number) => {
-    let url;
-
-    for (let i = 0; i < images?.length; i++) {
-      if (imageSize === images[i].height) {
-        url = images[i].url;
-      }
-    }
-    return url;
-  };
 
   return (
     <Box marginLeft="25px">
@@ -20,7 +11,7 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
       </Text>
       <HStack spacing="5px" wrap="wrap">
         {albums?.items.map((albumDetails) => {
-          const imageUrl = getUrlImageOfSize(albumDetails.images, 64);
+          const imageUrl = getUrlImageOfSize(albumDetails.images, 300);
 
           if (imageUrl) {
             return (
@@ -30,16 +21,16 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
                 onClick={() => setSelectedAlbum(albumDetails)}
                 key={albumDetails.id}
               >
-                <Image src={imageUrl} width="64px" height="64px" />
+                <Image src={imageUrl} width="96px" height="96px" />
                 <Link
                   color={
                     selectedAlbum?.id === albumDetails.id
                       ? 'gray.900'
                       : 'gray.600'
                   }
-                  fontSize="x-small"
+                  fontSize="small"
                   key={albumDetails.id}
-                  width="64px"
+                  width="96px"
                   overflow="hidden"
                   whiteSpace="nowrap"
                   textOverflow="ellipsis"
