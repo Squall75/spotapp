@@ -1,10 +1,8 @@
 import { Box, Text } from '@chakra-ui/layout';
-import { Button } from '@chakra-ui/react';
 import SpotifyWebApi from '../lib/SpotifyApi';
 import OAuthManager from '../lib/oauthManager';
 import { useRef, useState } from 'react';
 import SpotifyAuthForm from '../components/SpotifyAuthForm';
-import SpotifyLibrary from '../components/spotifyLibrary';
 import CollectionLayout from '../components/CollectionLayout';
 
 const Home = () => {
@@ -13,8 +11,7 @@ const Home = () => {
   const [api, setApi] = useState(null);
 
   const handleLoginClick = async () => {
-    console.log('Logging into Spotify');
-    const accessToken = await OAuthManager.obtainToken({
+    const code = await OAuthManager.authorizationCode({
       scopes: [
         /*
             the permission for reading public playlists is granted
@@ -38,15 +35,14 @@ const Home = () => {
       global['ga']('send', 'event', 'spotify-dedup', 'user-logged-in');
     }
 
-    const spotifyApi = new SpotifyWebApi();
-    spotifyApi.setAccessToken(accessToken);
-    setApi(spotifyApi);
+    const authToken = await OAuthManager.obtainToken(code);
 
-    console.log('Access Token ' + accessToken);
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(authToken.access_token);
+    setApi(spotifyApi);
 
     try {
       const signedInUser = await spotifyApi.getMe();
-      console.log(JSON.stringify(signedInUser));
       setUser(signedInUser);
       setIsLoggedIn(true);
     } catch (e) {

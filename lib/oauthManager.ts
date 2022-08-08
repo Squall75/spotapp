@@ -1,4 +1,6 @@
 import OAuthConfig from './oauthConfig';
+import fetch from './customFetch';
+import parseAPIResponse from './ParseAPIResponse';
 
 function toQueryString(obj: { [key: string]: string }) {
   const parts = [];
@@ -10,8 +12,8 @@ function toQueryString(obj: { [key: string]: string }) {
   return parts.join('&');
 }
 
-function obtainToken(options?: { scopes: Array<string> }) {
-  console.log("Obtain Token")
+function authorizationCode(options?: { scopes: Array<string> }) {
+  console.log("Get Auth Code")
   const promise = new Promise((resolve, reject) => {
     let authWindow = null;
     let pollAuthWindowClosed = null;
@@ -54,7 +56,7 @@ function obtainToken(options?: { scopes: Array<string> }) {
     const params: Parameters = {
       client_id: OAuthConfig.clientId,
       redirect_uri: OAuthConfig.redirectUri,
-      response_type: 'token',
+      response_type: 'code',
     };
 
     if (options.scopes) {
@@ -81,4 +83,26 @@ function obtainToken(options?: { scopes: Array<string> }) {
   return promise;
 }
 
-export default { obtainToken };
+async function obtainToken(authCode: string) {
+   // Use the Code value to Call Authorization to get Token and Refresh Token
+   const dataToBeSent = {
+    code: authCode,
+    redirect_uri: OAuthConfig.redirectUri,
+    grant_type: 'authorization_code',
+  };
+  const res = await fetch(
+    `https://accounts.spotify.com/api/token`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/x-www-form-urlencoded',
+        Authorization: `Basic ` + Buffer.from(OAuthConfig.clientId + ":" + OAuthConfig.clientSecret).toString('base64'),
+      },
+      body: new URLSearchParams(dataToBeSent),
+    }
+  );
+
+  return parseAPIResponse(res);
+}
+
+export default { authorizationCode, obtainToken };

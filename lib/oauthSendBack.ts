@@ -1,15 +1,18 @@
 import OAuthConfig from './oauthConfig';
 
-const OAuthSendBack = () => {
+ const OAuthSendBack = async () => {
   if (typeof window !== 'undefined') {
     const target = window.self === window.top ? window.opener : window.parent;
 
     console.log("In OAuthSendBack")
-    const hash = window.location.hash;
-    if (hash) {
-      const token = window.location.hash.split('&')[0].split('=')[1];
-      console.log("Auth Send Back Token" + token);
-      target.postMessage(token, OAuthConfig.host);
+    const searchQuery = window.location.search;
+    if (searchQuery) {
+
+      // Get the code from Spotify
+      const code = window.location.search.split('?')[1].split('=')[1];
+
+      // Noty listener that we got the code
+      target.postMessage(code, OAuthConfig.host);
     }
   }
 };
