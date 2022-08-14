@@ -23,6 +23,7 @@ import {
 } from 'react-icons/md';
 import Image from 'next/image';
 import { getUrlImageOfSize } from '../lib/helperFunctions';
+import { formatTime } from '../lib/formatter';
 
 const track = {
   name: '',
@@ -40,17 +41,6 @@ const Player = (props) => {
   const [current_track, setTrack] = useState(undefined);
   const [seek, setSeek] = useState(0.0);
   const [duration, setDuration] = useState(0.0);
-
-  const formatMSToMinutes = (msToConvert: number) => {
-    return (msToConvert / 1000) / 60;
-  }
-
-  const seekDisplayTime = (displayTime: number) => {
-    const minutesToDisplay = formatMSToMinutes(displayTime);
-    let minuteToTwoDec = minutesToDisplay.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
-    minuteToTwoDec = minuteToTwoDec.replace(".",":");
-    return minuteToTwoDec;
-  }
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -121,7 +111,7 @@ const Player = (props) => {
 
   return (
     <Flex>
-      <Flex width="35%" justifyContent="flex-end" paddingRight="10px">
+      <Flex width="35%" justifyContent="flex-end" paddingRight="30px">
        {imageUrl ? <Image src={imageUrl} width="64px" height="64px" /> : null}
       </Flex>
       <Box width="65%">
@@ -132,7 +122,7 @@ const Player = (props) => {
           <Flex justify="center" align="center">
             <Flex width="75%">
               <Box width="4%" display="flex" justifyContent="flex-end" paddingRight="10px">
-                <Text fontSize="xs">{seekDisplayTime(seek)}</Text>
+                <Text fontSize="xs">{formatTime(seek)}</Text>
               </Box>
               <Box width="60%">
                 <RangeSlider
@@ -151,7 +141,7 @@ const Player = (props) => {
                 </RangeSlider>
               </Box>
               <Box width="20%" display="flex" justifyContent="flex-start" paddingLeft="10px">
-                <Text fontSize="xs">{seekDisplayTime(duration)}</Text>
+                <Text fontSize="xs">{formatTime(duration)}</Text>
               </Box>
             </Flex>
             <Box width="25%">
@@ -180,7 +170,11 @@ const Player = (props) => {
                     aria-label="play"
                     fontSize="40px"
                     icon={<MdOutlinePlayCircleFilled />}
-                    onClick={() => player.togglePlay()}
+                    onClick={() => {
+                        player.togglePlay(); 
+                        console.log("Pause Player Clicked");
+                        }
+                    }
                   />
                 ) : (
                   <IconButton
