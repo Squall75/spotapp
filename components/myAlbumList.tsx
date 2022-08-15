@@ -6,10 +6,10 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
 
   return (
     <Box marginLeft="25px">
-      <Text color="gray.600" fontSize="sm">
+      <Text fontWeight="bold" color="gray.900" fontSize="sm">
         Albums
       </Text>
-      <HStack spacing="5px" wrap="wrap">
+      <HStack spacing="5px" wrap="wrap" marginTop="20px">
         {albums?.items.map((albumDetails) => {
           const imageUrl = getUrlImageOfSize(albumDetails.images, 300);
 

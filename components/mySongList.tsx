@@ -8,10 +8,10 @@ const mySongList = ({ songs, selectedSong, playerDeviceId, spotifyAPI }) => {
 
   return (
     <Box marginLeft="25px">
-      <Text color="gray.600" fontSize="sm">
+      <Text fontWeight="bold" color="gray.900" fontSize="sm">
         {songs?.tracks.items.length} Songs By Album
       </Text>
-      <VStack spacing="-10px" align="baseline">
+      <VStack spacing="-5px" align="baseline">
         {songs?.tracks.items.map((song) => (
           <Button
             variant="unstyled"
