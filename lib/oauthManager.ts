@@ -105,4 +105,23 @@ async function obtainToken(authCode: string) {
   return parseAPIResponse(res);
 }
 
-export default { authorizationCode, obtainToken };
+async function updateToken(refreshToken: string) {
+   const dataToBeSent = {
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken
+  };
+  const res = await fetch(
+    `https://accounts.spotify.com/api/token`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/x-www-form-urlencoded',
+        Authorization: `Basic ` + Buffer.from(OAuthConfig.clientId + ":" + OAuthConfig.clientSecret).toString('base64'),
+      },
+      body: new URLSearchParams(dataToBeSent),
+    }
+  );
+
+  return parseAPIResponse(res);
+}
+export default { authorizationCode, obtainToken, updateToken };
