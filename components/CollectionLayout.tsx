@@ -71,7 +71,7 @@ const CollectionLayout = ({api}) => {
         <Box position="absolute" width="70%">
           <MajorNavComponent />
         </Box>
-        <Box position="absolute" top="20px" width="70%" left="0">
+        <Box position="absolute" top="25px" width="70%" left="0">
           <MinorNavComponent />
         </Box>
         <Box position="absolute" right="0" top="10px" width="30%">
@@ -84,7 +84,7 @@ const CollectionLayout = ({api}) => {
         alignItems="start"
         height="calc(100vh - 200px)"
         marginBottom="100px"
-        bg="gray.400"
+        
       >
         <Box width="calc(100vw/4)" left="0" height="calc(100vh - 200px)">
           <MyArtistList followedArtists={followedArtists} selectedArtists={selectedArtists} setSelectedArtists={setSelectedArtists}/>

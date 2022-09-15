@@ -7,9 +7,10 @@ const majorNavComponent = () => {
       height="100%"
       paddingX="20px"
       >
-        <HStack spacing="24px">
-          <Button variant="unstyled">quickplay</Button>
-          <Button variant="unstyled" color="gray.600" fontWeight="bold">collection</Button>
+        <HStack fontSize="md" spacing="24px">
+          <Button fontSize="xl" variant="unstyled" color="gray.600">quickplay</Button>
+          <Button fontSize="xl" variant="unstyled" color="gray.900" fontWeight="bold">collection</Button>
+          <Button fontSize="xl" variant="unstyled" color="gray.600">marketplace</Button>
         </HStack>
     </Box>
   )

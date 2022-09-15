@@ -139,7 +139,7 @@ export default class SpotifyWebApi {
   }
 
   async getArtistAlbum(artistId: string) { 
-    return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums?limit=50`)
+    return await this.getGeneric(`${apiPrefix}/artists/${artistId}/albums?limit=50&include_groups=album,single`)
   }
 
   async getAlbumInfo(albumId: string){

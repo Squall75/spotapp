@@ -1,6 +1,6 @@
 import { Box, Text } from '@chakra-ui/layout';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import { DetailsHTMLAttributes, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AlbumDetails from './albumDetails';
 
 const AlbumList = ({
@@ -16,7 +16,6 @@ const AlbumList = ({
   useEffect(() => {
     const getArtistAlbum = async () => {
       console.log('Get Artist Album');
-      console.log('Spotify API Token ' + spotifyAPI.getAccessToken());
       const listAlubms = await spotifyAPI.getArtistAlbum(selectedArtistId);
       console.log(JSON.stringify(listAlubms));
       setAlbums(listAlubms);
@@ -26,9 +25,9 @@ const AlbumList = ({
 
   const handleAlbum = async (album?) => {
     console.log('Album Id ' + album.id);
-    const details = await spotifyAPI.getAlbumInfo(album.id);
-    console.log(JSON.stringify(details));
-    setDetails(details);
+    const albumDetails = await spotifyAPI.getAlbumInfo(album.id);
+    console.log(JSON.stringify(albumDetails));
+    setDetails(albumDetails);
     setViewAlbum(true);
   };
 

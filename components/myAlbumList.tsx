@@ -10,7 +10,49 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
         Albums
       </Text>
       <HStack spacing="5px" wrap="wrap" marginTop="20px">
-        {albums?.items.map((albumDetails) => {
+        {albums?.items.filter(albumDetails => albumDetails.album_type == "album")
+          .map((albumDetails) => {
+          const imageUrl = getUrlImageOfSize(albumDetails.images, 300);
+
+          if (imageUrl) {
+            return (
+              <VStack
+                w="128px"
+                h="128px"
+                onClick={() => setSelectedAlbum(albumDetails)}
+                key={albumDetails.id}
+              >
+                <Image src={imageUrl} width="96px" height="96px" />
+                <Link
+                  color={
+                    selectedAlbum?.id === albumDetails.id
+                      ? 'gray.900'
+                      : 'gray.600'
+                  }
+                  fontSize="small"
+                  key={albumDetails.id}
+                  width="96px"
+                  overflow="hidden"
+                  whiteSpace="nowrap"
+                  textOverflow="ellipsis"
+                >
+                  {albumDetails.name}
+                </Link>
+              </VStack>
+            );
+          }
+
+          // No Ablum artwork, don't add to list
+          return;
+        })}
+        ;
+      </HStack>    
+      <Text fontWeight="bold" color="gray.900" fontSize="sm">
+        Singles
+      </Text>
+      <HStack spacing="5px" wrap="wrap" marginTop="20px">
+        {albums?.items.filter(albumDetails => albumDetails.album_type == "single")
+          .map((albumDetails) => {
           const imageUrl = getUrlImageOfSize(albumDetails.images, 300);
 
           if (imageUrl) {
@@ -46,6 +88,7 @@ const myAlbumList = ({ albums, selectedAlbum, setSelectedAlbum }) => {
         })}
         ;
       </HStack>
+
     </Box>
   );
 };

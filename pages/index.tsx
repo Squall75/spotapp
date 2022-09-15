@@ -3,7 +3,7 @@ import SpotifyWebApi from '../lib/SpotifyApi';
 import OAuthManager from '../lib/oauthManager';
 import { useRef, useState } from 'react';
 import SpotifyAuthForm from '../components/SpotifyAuthForm';
-import CollectionLayout from '../components/CollectionLayout';
+import ViewController from '../components/viewController';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,7 +53,7 @@ const Home = () => {
   return (
     <Box>
       {isLoggedIn ? (
-        <CollectionLayout api={api} />
+        <ViewController api={api} />
       ) : (
         <SpotifyAuthForm handleLoginClick={handleLoginClick} />
       )}
