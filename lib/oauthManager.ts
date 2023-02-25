@@ -2,6 +2,14 @@ import OAuthConfig from './oauthConfig';
 import fetch from './customFetch';
 import parseAPIResponse from './ParseAPIResponse';
 
+// Map for localStorage keys
+const LOCALSTORAGE_KEYS = {
+  accessToken: 'spotify_access_token',
+  refreshToken: 'spotify_refresh_token',
+  expireTime: 'spotify_token_expire_time',
+  timestamp: 'spotify_token_timestamp',
+};
+
 function toQueryString(obj: { [key: string]: string }) {
   const parts = [];
   for (const i in obj) {
@@ -83,45 +91,108 @@ function authorizationCode(options?: { scopes: Array<string> }) {
   return promise;
 }
 
+/**
+ * Checks if the amount of time that has elapsed between the timestamp in localStorage
+ * and now is greater than the expiration time of 3600 seconds (1 hour).
+ * @returns {boolean} Whether or not the access token in localStorage has expired
+ */
+ const hasTokenExpired = () => {
+   const accessToken = window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken);
+   const timestamp = window.localStorage.getItem(LOCALSTORAGE_KEYS.timestamp);
+   const expireTime = window.localStorage.getItem(LOCALSTORAGE_KEYS.expireTime);
+
+   if (!accessToken || !timestamp) {
+    return false;
+  }
+  const millisecondsElapsed = Date.now() - Number(timestamp);
+  return (millisecondsElapsed / 1000) > Number(expireTime);
+};
+
+async function fetchSpotifyToken(authCode: string): Promise<Response> {
+  // Use the Code value to Call Authorization to get Token and Refresh Token
+  const dataToBeSent = {
+   code: authCode,
+   redirect_uri: OAuthConfig.redirectUri,
+   grant_type: 'authorization_code',
+ };
+  const res = await fetch(`https://accounts.spotify.com/api/token`, {
+     method: 'POST',
+     headers: {
+       'Content-Type':'application/x-www-form-urlencoded',
+       Authorization: `Basic ` + Buffer.from(OAuthConfig.clientId + ":" + OAuthConfig.clientSecret).toString('base64'),
+     },
+     body: new URLSearchParams(dataToBeSent),
+   }
+ );
+
+ return res;
+}
+
+async function updateToken(refreshToken: string): Promise<Response> {
+  const dataToBeSent = {
+   grant_type: 'refresh_token',
+   refresh_token: refreshToken
+ };
+ const res = await fetch(`https://accounts.spotify.com/api/token`, {
+     method: 'POST',
+     headers: {
+       'Content-Type':'application/x-www-form-urlencoded',
+     Authorization:
+       `Basic ` +
+       Buffer.from(
+         OAuthConfig.clientId + ':' + OAuthConfig.clientSecret
+       ).toString('base64'),
+     },
+     body: new URLSearchParams(dataToBeSent),
+ });
+
+ return parseAPIResponse(res);
+}
+
+/*
+ * Handles Logic for retrieving Spotify authorization token and refresh token. 
+ * This will either be the token from local storage or pulled directly from Spotify.
+ * @retruns Object
+ */
 async function obtainToken(authCode: string) {
-   // Use the Code value to Call Authorization to get Token and Refresh Token
-   const dataToBeSent = {
-    code: authCode,
-    redirect_uri: OAuthConfig.redirectUri,
-    grant_type: 'authorization_code',
-  };
-  const res = await fetch(
-    `https://accounts.spotify.com/api/token`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/x-www-form-urlencoded',
-        Authorization: `Basic ` + Buffer.from(OAuthConfig.clientId + ":" + OAuthConfig.clientSecret).toString('base64'),
-      },
-      body: new URLSearchParams(dataToBeSent),
-    }
-  );
+  if (typeof window !== 'undefined') {
 
-  return parseAPIResponse(res);
+     // Check to see if Local storage already has a valid token before fetching new
+    if (window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken) && !hasTokenExpired()) {
+      return window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken);
+    }
+
+    let res: Response;
+
+    // Check if refresh token should be used.
+    if (hasTokenExpired() && window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken)){
+      res = await updateToken(
+        window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken)
+      );
+    } else {
+      res = await fetchSpotifyToken(authCode);
+    }
+
+    const parsedReponse = await parseAPIResponse(res);
+
+    window.localStorage.setItem(
+      LOCALSTORAGE_KEYS.accessToken,
+      parsedReponse.access_token
+    );
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now());
+    window.localStorage.setItem(
+      LOCALSTORAGE_KEYS.expireTime,
+      parsedReponse.expires_in
+    );
+
+    window.localStorage.setItem(
+      LOCALSTORAGE_KEYS.refreshToken,
+      parsedReponse.refresh_token
+    );
+    return parsedReponse.access_token;
+  }
+  return null;
 }
 
-async function updateToken(refreshToken: string) {
-   const dataToBeSent = {
-    grant_type: 'refresh_token',
-    refresh_token: refreshToken
-  };
-  const res = await fetch(
-    `https://accounts.spotify.com/api/token`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/x-www-form-urlencoded',
-        Authorization: `Basic ` + Buffer.from(OAuthConfig.clientId + ":" + OAuthConfig.clientSecret).toString('base64'),
-      },
-      body: new URLSearchParams(dataToBeSent),
-    }
-  );
 
-  return parseAPIResponse(res);
-}
 export default { authorizationCode, obtainToken, updateToken };

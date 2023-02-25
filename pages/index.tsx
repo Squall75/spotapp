@@ -38,7 +38,7 @@ const Home = () => {
     const authToken = await OAuthManager.obtainToken(code);
 
     const spotifyApi = new SpotifyWebApi();
-    spotifyApi.setAccessToken(authToken.access_token);
+    spotifyApi.setAccessToken(authToken);
     setApi(spotifyApi);
 
     try {
