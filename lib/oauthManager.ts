@@ -22,6 +22,7 @@ function toQueryString(obj: { [key: string]: string }) {
 
 function authorizationCode(options?: { scopes: Array<string> }) {
   console.log("Get Auth Code")
+  console.log("Host Config : " + OAuthConfig.host)
   const promise = new Promise((resolve, reject) => {
     let authWindow = null;
     let pollAuthWindowClosed = null;
