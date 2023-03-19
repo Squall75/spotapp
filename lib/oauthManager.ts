@@ -21,11 +21,11 @@ function toQueryString(obj: { [key: string]: string }) {
 }
 
 function authorizationCode(options?: { scopes: Array<string> }) {
-  console.log("Get Auth Code")
   console.log("Host Config : " + OAuthConfig.host)
   const promise = new Promise((resolve, reject) => {
     let authWindow = null;
     let pollAuthWindowClosed = null;
+    console.log("In Promise Windows");
 
     function receiveMessage(event: { origin: string; data: unknown }) {
       clearInterval(pollAuthWindowClosed);
@@ -45,6 +45,7 @@ function authorizationCode(options?: { scopes: Array<string> }) {
 
       // todo: manage case when the user rejects the oauth
       // or the oauth fails to obtain a token
+      console.log("Resolving event data");
       resolve(event.data);
     }
 
@@ -106,6 +107,9 @@ function authorizationCode(options?: { scopes: Array<string> }) {
     return false;
   }
   const millisecondsElapsed = Date.now() - Number(timestamp);
+  if ((millisecondsElapsed / 1000) > Number(expireTime)) {
+    console.log("Token has expired");
+  }
   return (millisecondsElapsed / 1000) > Number(expireTime);
 };
 
@@ -130,6 +134,7 @@ async function fetchSpotifyToken(authCode: string): Promise<Response> {
 }
 
 async function updateToken(refreshToken: string): Promise<Response> {
+  console.log("Updating token");
   const dataToBeSent = {
    grant_type: 'refresh_token',
    refresh_token: refreshToken
@@ -147,7 +152,7 @@ async function updateToken(refreshToken: string): Promise<Response> {
      body: new URLSearchParams(dataToBeSent),
  });
 
- return parseAPIResponse(res);
+ return res;
 }
 
 /*
@@ -159,14 +164,15 @@ async function obtainToken(authCode: string) {
   if (typeof window !== 'undefined') {
 
      // Check to see if Local storage already has a valid token before fetching new
-    if (window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken) && !hasTokenExpired()) {
+    if (window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken) && window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken) !== 'undefined' && !hasTokenExpired()) {
+      console.log("Reusing access token");
       return window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken);
     }
 
     let res: Response;
 
     // Check if refresh token should be used.
-    if (hasTokenExpired() && window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken)){
+    if (hasTokenExpired() && window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken) && window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken) !== 'undefined') {
       res = await updateToken(
         window.localStorage.getItem(LOCALSTORAGE_KEYS.refreshToken)
       );
@@ -175,6 +181,7 @@ async function obtainToken(authCode: string) {
     }
 
     const parsedReponse = await parseAPIResponse(res);
+    console.log(parsedReponse);
 
     window.localStorage.setItem(
       LOCALSTORAGE_KEYS.accessToken,
