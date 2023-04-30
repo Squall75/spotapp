@@ -38,6 +38,7 @@ const Player = (props) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_active, setActive] = useState(false);
+  const [is_firstPlay, setFirstPlay] = useState(true);
   const [current_track, setTrack] = useState(undefined);
   const [seek, setSeek] = useState(0.0);
   const [duration, setDuration] = useState(0.0);
@@ -63,6 +64,7 @@ const Player = (props) => {
         });
 
         setPlayer(player);
+        setFirstPlay(true);
 
         player.addListener('ready', ({ device_id }) => {
           console.log('Ready with Device ID', device_id);
@@ -78,6 +80,13 @@ const Player = (props) => {
         player.addListener('player_state_changed', (state) => {
           if (!state) {
             return;
+          }
+
+          // Attempt to fix an issue where player will not play on first load of a track. Per Spotify documents
+          // https://developer.spotify.com/documentation/web-playback-sdk/reference#spotifyplayeractivateelement
+          if (is_firstPlay) {
+            player.activateElement();
+            setFirstPlay(false);
           }
 
           setTrack(state.track_window.current_track);
@@ -172,7 +181,6 @@ const Player = (props) => {
                     icon={<MdOutlinePlayCircleFilled />}
                     onClick={() => {
                         player.togglePlay(); 
-                        console.log("Pause Player Clicked");
                         }
                     }
                   />
