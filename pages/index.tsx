@@ -11,7 +11,39 @@ const Home = () => {
   const [api, setApi] = useState();
 
   const handleLoginClick = async () => {
-    return Promise.resolve();
+    const code = await oAuthManager.authorizationCode({
+      scopes: [
+        'playlist-read-private',
+        'playlist-read-collaborative',
+        'playlist-modify-public',
+        'playlist-modify-private',
+        'user-library-read',
+        'user-library-modify',
+        'user-follow-read',
+        'streaming',
+      ],
+    }).catch(function (error) {
+      console.error('There was an error obtaining the token', error);
+    });
+
+    if (global['ga']) {
+      global['ga']('send', 'event', 'spotify-dedup', 'user-logged-in');
+    }
+    console.log("Obtain token call");
+
+    const authToken = await oAuthManager.obtainToken(code);
+
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(authToken);
+    setApi(spotifyApi);
+
+    try {
+      const signedInUser = await spotifyApi.getMe();
+      setUser(signedInUser);
+      setIsLoggedIn(true);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
