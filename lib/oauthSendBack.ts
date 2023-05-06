@@ -1,4 +1,4 @@
-import OAuthConfig from './OauthConfig';
+import OAuthConfig from './OAuthConfig';
 
 const OAuthSendBack = async () => {
   if (typeof window !== 'undefined') {
