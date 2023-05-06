@@ -4,11 +4,11 @@ const nextConfig = {
   images: {
     domains: ['i.scdn.co'],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
 }
 
