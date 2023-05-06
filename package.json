@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev & local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000",
-    "postdev": "local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -48,7 +47,6 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.4.1",
     "ts-node": "^10.4.0",
-    "typescript": "^4.6.4",
-    "local-ssl-proxy": "^1.3.0"
+    "typescript": "^4.6.4"
   }
 }
