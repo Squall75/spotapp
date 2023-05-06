@@ -13,11 +13,6 @@ const Home = () => {
   const handleLoginClick = async () => {
     const code = await OAuthManager.authorizationCode({
       scopes: [
-        /*
-            the permission for reading public playlists is granted
-            automatically when obtaining an access token through
-            the user login form
-            */
         'playlist-read-private',
         'playlist-read-collaborative',
         'playlist-modify-public',
@@ -34,6 +29,7 @@ const Home = () => {
     if (global['ga']) {
       global['ga']('send', 'event', 'spotify-dedup', 'user-logged-in');
     }
+    console.log("Obtain token call");
 
     const authToken = await OAuthManager.obtainToken(code);
 
