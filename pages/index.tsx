@@ -1,6 +1,6 @@
 import { Box, Text } from '@chakra-ui/layout';
 import SpotifyWebApi from '../lib/SpotifyApi';
-import OAuthManager from '../lib/oauthManager';
+import oAuthManager from '../lib/oauthManager';
 import { useRef, useState } from 'react';
 import SpotifyAuthForm from '../components/SpotifyAuthForm';
 import ViewController from '../components/viewController';
@@ -11,7 +11,7 @@ const Home = () => {
   const [api, setApi] = useState();
 
   const handleLoginClick = async () => {
-    const code = await OAuthManager.authorizationCode({
+    const code = await oAuthManager.authorizationCode({
       scopes: [
         'playlist-read-private',
         'playlist-read-collaborative',
@@ -31,7 +31,7 @@ const Home = () => {
     }
     console.log("Obtain token call");
 
-    const authToken = await OAuthManager.obtainToken(code);
+    const authToken = await oAuthManager.obtainToken(code);
 
     const spotifyApi = new SpotifyWebApi();
     spotifyApi.setAccessToken(authToken);
