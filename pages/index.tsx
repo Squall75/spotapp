@@ -7,8 +7,8 @@ import ViewController from '../components/viewController';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [api, setApi] = useState(null);
+  const [user, setUser] = useState();
+  const [api, setApi] = useState();
 
   const handleLoginClick = async () => {
     const code = await OAuthManager.authorizationCode({
