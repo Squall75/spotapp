@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/layout';
 import { useState } from 'react';
 import SpotifyWebApi from '../lib/SpotifyApi';
-import oAuthManager from '../lib/oauthManager';
+import oAuthManager from '../lib/OauthManager';
 import SpotifyAuthForm from '../components/SpotifyAuthForm';
 import ViewController from '../components/viewController';
 

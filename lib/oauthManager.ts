@@ -1,4 +1,4 @@
-import OAuthConfig from './oauthConfig';
+import OAuthConfig from './OauthConfig';
 import fetch from './customFetch';
 import parseAPIResponse from './ParseAPIResponse';
 

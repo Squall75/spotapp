@@ -1,6 +1,6 @@
-import OAuthConfig from './oauthConfig';
+import OAuthConfig from './OauthConfig';
 
- const OAuthSendBack = async () => {
+const OAuthSendBack = async () => {
   if (typeof window !== 'undefined') {
     const target = window.self === window.top ? window.opener : window.parent;
 

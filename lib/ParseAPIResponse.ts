@@ -25,7 +25,7 @@ function InvalidJSONException(body: string, status: number) {
   this.name = 'InvalidJSONException';
 }
 
-export const parseAPIResponse = (response: Response): Object =>
+export const ParseAPIResponse = (response: Response): Object =>
   new Promise((resolve) => resolve(response.text()))
     .catch((err) => {
       throw new NetworkException(err.message, response.status);
@@ -47,4 +47,4 @@ export const parseAPIResponse = (response: Response): Object =>
       }
     });
 
-export default parseAPIResponse;
+export default ParseAPIResponse;

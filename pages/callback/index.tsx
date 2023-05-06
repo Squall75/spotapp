@@ -1,4 +1,4 @@
-import OAuthSendBack from "../../lib/oauthSendBack";
+import OAuthSendBack from '../../lib/OauthSendBack';
 
 export default function Callback() {
   OAuthSendBack();
